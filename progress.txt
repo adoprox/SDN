@@ -1,0 +1,4 @@
+1. Disable the comms after pinging 
+2. a. DONE 
+2. b. / 3 - SAME 
+    JSON 
