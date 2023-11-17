@@ -42,7 +42,7 @@ def login():
         switch_list = get_switches()
         for switch_id in switch_list:
             response = disable_flow_rules(switch_id)
-            print(f"Disabling flow rules for switch {switch_id}: {response.text}")
+            #print(f"Disabling flow rules for switch {switch_id}: {response.text}")
 
         credentials = load_credentials()
         stored_password_hash = credentials.get(login_id)
