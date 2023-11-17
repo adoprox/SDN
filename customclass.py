@@ -13,21 +13,27 @@ class ONOS:
         getpath = os.path.join(self.onos_url, key)
         response = requests.get(getpath, auth=(self.username, self.password))
         json_data = response.json()
-        hosts_dict = {}
+        list = {}
         if(key=="hosts"):
             for host in json_data["hosts"]:
                 ip_address = host["ipAddresses"][0]
                 element_id = host["locations"][0]["elementId"]
                 port = host["locations"][0]["port"]
-                hosts_dict[ip_address] = {
+                list[ip_address] = {
                 "flag": "0",
                 "elementId":element_id,
                 "port":port,}
         if(key=="devices"):
+            # Extract the "id" value for each device
+            device_ids = [device["id"] for device in json_data.get("devices", [])]
+
+            # Print the resulting array
+            print(device_ids)
+
             #json request for devices. 
             return 0
 
-        return hosts_dict
+        return list
 
     def postmethod(self,deviceID,data):
 

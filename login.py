@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import json
 from werkzeug.security import generate_password_hash, check_password_hash
-from mngtopo import flag_hosts, flow_rules
+from mngtopo import get_host, enable_flow_rules, get_switches, get_hosts, disable_flow_rules
 
 app = Flask(__name__)
 
@@ -39,6 +39,11 @@ def login():
     password = request.form.get('password')
 
     try:
+        switch_list = get_switches()
+        for switch_id in switch_list:
+            response = disable_flow_rules(switch_id)
+            print(f"Disabling flow rules for switch {switch_id}: {response.text}")
+
         credentials = load_credentials()
         stored_password_hash = credentials.get(login_id)
 
@@ -47,13 +52,13 @@ def login():
         print("Stored Password Hash:", stored_password_hash)
 
         if stored_password_hash and check_password_hash(stored_password_hash, password):
-            host_data = flag_hosts(login_id)
+            host_data = get_host(login_id)
             if host_data:
                 host_data["flag"] = "1"
                 print(host_data)
 
                 deviceID = host_data["elementId"]
-                response = flow_rules(deviceID)
+                response = enable_flow_rules(deviceID)
 
                 if response.status_code == 201:
                     print("Request successful")
