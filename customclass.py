@@ -25,13 +25,7 @@ class ONOS:
                 "port":port,}
         if(key=="devices"):
             # Extract the "id" value for each device
-            device_ids = [device["id"] for device in json_data.get("devices", [])]
-
-            # Print the resulting array
-            print(device_ids)
-
-            #json request for devices. 
-            return 0
+            list = [device["id"] for device in json_data.get("devices", [])]
 
         return list
 

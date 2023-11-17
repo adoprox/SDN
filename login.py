@@ -53,7 +53,9 @@ def login():
 
         if stored_password_hash and check_password_hash(stored_password_hash, password):
             host_data = get_host(login_id)
-            if host_data:
+
+            #Enabling flow rules only if host is not yet authenticathed (flag == 0)
+            if host_data["flag"] == "0":
                 host_data["flag"] = "1"
                 print(host_data)
 
