@@ -16,7 +16,7 @@ def flag_hosts(user):
     #print(hosts[user])
     return hosts[user]
 
-def flow_rules(deviceID):
+def add_flow_rules(deviceID):
     data = {
                 "priority": 40000,
                 "timeout": 0,
