@@ -29,7 +29,7 @@ class ONOS:
 
         return hosts_dict
 
-    def postmethod(self,deviceID,file):
+    def postmethod(self,deviceID,data):
 
         headers = {
                     'Content-Type': 'application/json',
@@ -40,7 +40,7 @@ class ONOS:
         appID = "?appID=00"+str(appnum)
         setting = "flows/"
         getpath = os.path.join(self.onos_url,setting,deviceID,appID)
-        response = requests.post(getpath, json=file, headers=headers, auth=(self.username, self.password))
+        response = requests.post(getpath, json=data, headers=headers, auth=(self.username, self.password))
         return response
 
 
