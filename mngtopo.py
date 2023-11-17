@@ -1,69 +1,76 @@
 from customclass import ONOS
 import json
+
 onos_obj = ONOS()
+
 
 def get_hosts():
     hosts = onos_obj.getmethod("hosts")
-    #same pass flows in getmethod()
-    #print("GET METHOD----------")
-    #print(hosts)
+    # same pass flows in getmethod()
+    # print("GET METHOD----------")
+    # print(hosts)
     return hosts
+
 
 def get_switches():
     devices = onos_obj.getmethod("devices")
-    #same pass flows in getmethod()
-    #print("GET METHOD----------")
-    #print(devices)
+    # same pass flows in getmethod()
+    # print("GET METHOD----------")
+    # print(devices)
     return devices
 
-#returns the JSON for that particular user. 
+
+# returns the JSON for that particular user.
 def get_host(user):
     hosts = get_hosts()
-    #print("FLAG METHOD----------------")
-    #print(hosts[user])
+    # print("FLAG METHOD----------------")
+    # print(hosts[user])
     return hosts[user]
 
-def enable_flow_rules(deviceID):
+
+def enable_flow_rules(host_IP, device_ID, port):
     data = {
-                "priority": 40000,
-                "timeout": 0,
-                "isPermanent": "true",
-                "deviceId": str(deviceID),
-                "treatment": {
-                    "instructions": [
-                    {
-                        "type": "OUTPUT",
-                        "port": "CONTROLLER"
-                    }
-                    ]
+        "priority": 41000,
+        "timeout": 0,
+        "isPermanent": "true",
+        "deviceId": str(device_ID),
+        "treatment": {
+            "instructions": []  # no instruction, enable the traffic
+        },
+        "selector": {
+            "criteria": [
+                {
+                    "type": "ETH_TYPE",
+                    "ethType": "0x800"
                 },
-                "selector": {
-                    "criteria": [
-                    {
-                        "type": "ETH_TYPE",
-                        "ethType": "0x88cc"
-                    }
-                    ]
+                {
+                    "type": "IPV4_SRC",
+                    "ip": str(host_IP)
+                },
+                {
+                    "type": "IN_PORT",
+                    "ip": str(port)
                 }
+            ]
+        }
     }
     # Update of the device URL
-    device_url = deviceID.replace('of:','of%3A')
-
-    # Sending the POST request in order to enable the traffic
-    response = onos_obj.postmethod(device_url,data)
+    device_url = device_ID.replace('of:', 'of%3A')
+    # Sending the POST request to enable traffic from the specified host to any other host
+    response = onos_obj.postmethod(device_url, data)
     return response
 
 
-def disable_flow_rules(deviceID):
+def disable_flow_rules(host_IP, device_ID, port):
     data = {
-        "priority": 40000,
+        "priority": 40010,  # biggest priority at the beginning
         "timeout": 0,
         "isPermanent": "true",
-        "deviceId": str(deviceID),
+        "deviceId": str(device_ID),
         "treatment": {
             "instructions": [
                 {
-                    "type": "NOACTION"
+                    "type": "DROP"
                 }
             ]
         },
@@ -71,14 +78,22 @@ def disable_flow_rules(deviceID):
             "criteria": [
                 {
                     "type": "ETH_TYPE",
-                    "ethType": "0x0"  # We set a non-valid value in order to block all the traffic
+                    "ethType": "0x800"
+                },
+                {
+                    "type": "IPV4_SRC",
+                    "ip": str(host_IP)
+                },
+                {
+                    "type": "IN_PORT",
+                    "ip": str(port)
                 }
             ]
         }
     }
 
     # Update of the device URL
-    device_url = deviceID.replace('of:', 'of%3A')
+    device_url = device_ID.replace('of:', 'of%3A')
 
     # Sending the POST request in order to disable the traffic
     response = onos_obj.postmethod(device_url, data)
