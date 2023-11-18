@@ -33,23 +33,33 @@ save_credentials("10.0.0.7", "host7")
 
 @app.route('/')
 def index():
-    return render_template('login.html', authenticated_users=[], error_message=None)
+    host_list = get_hosts()
+    for ip_address, host_info in host_list.items():
+        host_switch_id = host_info["elementId"]
+        host_port = host_info["port"]
+        response = disable_flow_rules(ip_address, host_switch_id, host_port)
+        print(response.status_code)
+
+    return render_template('login_1.html', authenticated_users=[], error_message=None)
 
 
 @app.route('/login', methods=['POST'])
 def login():
+
     login_id = request.form.get('loginId')
     password = request.form.get('password')
+
 
     try:
         switch_list = get_switches()
 
         # Initially all hosts are disabled to transmit / receive, by the network
-        host_list = get_hosts()
+        """host_list = get_hosts()
         for ip_address, host_info in host_list.items():
             host_switch_id = host_info["elementId"]
             host_port = host_info["port"]
-            disable_flow_rules(ip_address, host_switch_id, host_port)
+            response = disable_flow_rules(ip_address, host_switch_id, host_port)
+            print(response.status_code)"""
 
         credentials = load_credentials()
         stored_password_hash = credentials.get(login_id)
@@ -69,10 +79,10 @@ def login():
                 host_switch_id = host_data["elementId"]
                 host_port = host_data["port"]
                 response = enable_flow_rules(login_id, host_switch_id, host_port)
-
+                print(response)
                 if response.status_code == 201:
                     print("Request successful")
-                    # print(response)
+                    print(response)
                 else:
                     print(f"Request failed with status code: {response.status_code}")
                 # call a function to change the flow rules here, pass the login_id.

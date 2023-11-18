@@ -30,7 +30,7 @@ class ONOS:
 
         return list
 
-    def postmethod(self, deviceID, data):
+    def postmethod(self, deviceID, postdata):
 
         headers = {
             'Content-Type': 'application/json',
@@ -40,8 +40,9 @@ class ONOS:
         # used to manage JSON Files
         appID = "?appID=00" + str(appnum)
         setting = "flows/"
-        getpath = os.path.join(self.onos_url, setting, deviceID, appID)
-        response = requests.post(getpath, json=data, headers=headers, auth=(self.username, self.password))
+        flows_id= deviceID + appID
+        getpath = os.path.join(self.onos_url, setting, flows_id)
+        response = requests.post(getpath, data=json.dumps(postdata), headers=headers, auth=(self.username, self.password))
         return response
 
 

@@ -1,4 +1,14 @@
-1. Disable the comms after pinging 
-2. a. DONE 
-2. b. / 3 - SAME 
-    JSON 
+1. Update the login page after host login (authentication output) 
+2. Commend the code (login, classfile, mngtopo)
+3. Test more topologies ( make a folder for multiple topologies)
+4. Use the app to disable the hosts (EDER mail) 
+
+
+4. Try deleting flows using deviceID. 
+5. Then integrate with logout feature. 
+
+6. Make a list of features we have accomplished. 
+and how we tested it 
+(h1 pings after login) 
+(h1 on wireshark) 
+(link testing on wireshark)
