@@ -40,6 +40,13 @@
             cursor: pointer;
             width: 100%;
         }
+        .user-list {
+            margin-top: 20px;
+        }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -52,5 +59,18 @@
 
         <button type="submit">Login</button>
     </form>
+
+    <div class="user-list">
+        <h2>Successful Authentication for host:</h2>
+        <ul>
+            {% for user in authenticated_users %}
+                <li> IP ADDRESS: {{ user.username }} - PASSWORD: {{ user.password }}</li>
+            {% endfor %}
+        </ul>
+
+        {% if error_message %}
+            <div class="error-message">{{ error_message }}</div>
+        {% endif %}
+    </div>
 </body>
 </html>

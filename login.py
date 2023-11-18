@@ -40,7 +40,7 @@ def index():
         response = disable_flow_rules(ip_address, host_switch_id, host_port)
         print(response.status_code)
 
-    return render_template('login_1.html', authenticated_users=[], error_message=None)
+    return render_template('login.html', authenticated_users=[], error_message=None)
 
 
 @app.route('/login', methods=['POST'])
