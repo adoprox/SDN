@@ -38,21 +38,11 @@ def index():
 
 @app.route('/login', methods=['POST'])
 def login():
-
+    # retrieve the credentials send by the user through the web interface
     login_id = request.form.get('loginId')
     password = request.form.get('password')
 
-
     try:
-        switch_list = get_switches()
-
-        # Initially all hosts are disabled to transmit / receive, by the network
-        """host_list = get_hosts()
-        for ip_address, host_info in host_list.items():
-            host_switch_id = host_info["elementId"]
-            host_port = host_info["port"]
-            response = disable_flow_rules(ip_address, host_switch_id, host_port)
-            print(response.status_code)"""
 
         credentials = load_credentials()
         stored_password_hash = credentials.get(login_id)
@@ -62,6 +52,7 @@ def login():
         print("Stored Password Hash:", stored_password_hash)
 
         if stored_password_hash and check_password_hash(stored_password_hash, password):
+            # get the infos of the single host who has done authentication
             host_data = get_host(login_id)
 
             # Enabling flow rules only if host is not yet authenticated (flag == 0)
@@ -69,8 +60,11 @@ def login():
                 host_data["flag"] = "1"
                 print(host_data)
 
+                # retrieving information about the host
                 host_switch_id = host_data["elementId"]
                 host_port = host_data["port"]
+
+                # enable connectivity in the network for the corresponding host
                 response = enable_flow_rules(login_id, host_switch_id, host_port)
                 print(response)
                 if response.status_code == 201:
@@ -83,6 +77,7 @@ def login():
                 authenticated_users = [{"username": login_id, "password": password}]
                 return render_template('login_1.html', authenticated_users=authenticated_users, error_message=None)
         else:
+            # If the credentials are invalid the web server return an ERROR message
             error_message = "Invalid credentials. Please try again."
             return render_template('login_1.html', authenticated_users=[], error_message=error_message)
 
@@ -92,10 +87,14 @@ def login():
         return render_template('login_1.html', authenticated_users=[], error_message=error_message)
     
 def deactivate_comms():
+    # get the list of the hosts
     host_list = get_hosts()
-    for ip_address, host_info in host_list.items():
+
+    # Initially all hosts are disabled to transmit / receive, by the network
+    for ip_address, host_info in host_list.items():  # retrieving information about the host
         host_switch_id = host_info["elementId"]
         host_port = host_info["port"]
+        # disable the communication for each host of the topology
         response = disable_flow_rules(ip_address, host_switch_id, host_port)
         print(response.status_code)
 

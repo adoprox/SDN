@@ -3,7 +3,7 @@ import json
 
 onos_obj = ONOS()
 
-
+# returns the JSON for all the users.
 def get_hosts():
     hosts = onos_obj.getmethod("hosts")
     # same pass flows in getmethod()
@@ -28,14 +28,14 @@ def get_host(user):
     return hosts[user]
 
 
-def enable_flow_rules(host_IP, device_ID, port):
-    IP_host = host_IP + "/32"
-    postdata = {
+def enable_flow_rules(host_ip, device_id, port):
+    ip_host = host_ip + "/32"
+    post_data = {
         "priority": 41000,
         "timeout": 0,
         "isPermanent": "true",
         "state": "ADD",
-        "deviceId": str(device_ID),
+        "deviceId": str(device_id),
         "treatment": {
             "instructions": [
                 {
@@ -52,8 +52,8 @@ def enable_flow_rules(host_IP, device_ID, port):
                 },
                 {
                     "type": "IPV4_SRC",
-                    "ip": str(IP_host)
-                }, 
+                    "ip": str(ip_host)
+                },
                 {
                     "type": "IN_PORT",
                     "port": str(port)
@@ -62,20 +62,20 @@ def enable_flow_rules(host_IP, device_ID, port):
         }
     }
     # Update of the device URL
-    device_url = device_ID.replace('of:', 'of%3A')
+    device_url = device_id.replace('of:', 'of%3A')
     # Sending the POST request to enable traffic from the specified host to any other host
-    response = onos_obj.postmethod(device_url, postdata)
+    response = onos_obj.postmethod(device_url, post_data)
     return response
 
 
-def disable_flow_rules(host_IP, device_ID, port):
-    IP_host = host_IP + "/32"
-    postdata = {
+def disable_flow_rules(host_ip, device_id, port):
+    ip_host = host_ip + "/32"
+    post_data = {
         "priority": 40010,
         "timeout": 0,
         "isPermanent": "true",
         "state": "ADD",
-        "deviceId": str(device_ID),
+        "deviceId": str(device_id),
         "treatment": {
             "instructions": [
                 {
@@ -91,8 +91,8 @@ def disable_flow_rules(host_IP, device_ID, port):
                 },
                 {
                     "type": "IPV4_SRC",
-                    "ip": str(IP_host)
-                }, 
+                    "ip": str(ip_host)
+                },
                 {
                     "type": "IN_PORT",
                     "port": str(port)
@@ -100,11 +100,11 @@ def disable_flow_rules(host_IP, device_ID, port):
             ]
         }
     }
-    
-    print(device_ID)
+
+    print(device_id)
     # Update of the device URL
-    device_url = device_ID.replace('of:', 'of%3A')
+    device_url = device_id.replace('of:', 'of%3A')
     # Sending the POST request in order to disable the traffic
-    response = onos_obj.postmethod(device_url, postdata)
+    response = onos_obj.postmethod(device_url, post_data)
 
     return response
