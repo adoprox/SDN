@@ -33,14 +33,7 @@ save_credentials("10.0.0.7", "host7")
 
 @app.route('/')
 def index():
-    host_list = get_hosts()
-    for ip_address, host_info in host_list.items():
-        host_switch_id = host_info["elementId"]
-        host_port = host_info["port"]
-        response = disable_flow_rules(ip_address, host_switch_id, host_port)
-        print(response.status_code)
-
-    return render_template('login.html', authenticated_users=[], error_message=None)
+    return render_template('login_1.html', authenticated_users=[], error_message=None)
 
 
 @app.route('/login', methods=['POST'])
@@ -88,16 +81,25 @@ def login():
                 # call a function to change the flow rules here, pass the login_id.
 
                 authenticated_users = [{"username": login_id, "password": password}]
-                return render_template('login.html', authenticated_users=authenticated_users, error_message=None)
+                return render_template('login_1.html', authenticated_users=authenticated_users, error_message=None)
         else:
             error_message = "Invalid credentials. Please try again."
-            return render_template('login.html', authenticated_users=[], error_message=error_message)
+            return render_template('login_1.html', authenticated_users=[], error_message=error_message)
 
     except Exception as e:
         print(f"An error occurred: {e}")
         error_message = "An error occurred during login. Please try again."
-        return render_template('login.html', authenticated_users=[], error_message=error_message)
+        return render_template('login_1.html', authenticated_users=[], error_message=error_message)
+    
+def deactivate_comms():
+    host_list = get_hosts()
+    for ip_address, host_info in host_list.items():
+        host_switch_id = host_info["elementId"]
+        host_port = host_info["port"]
+        response = disable_flow_rules(ip_address, host_switch_id, host_port)
+        print(response.status_code)
 
 
 if __name__ == '__main__':
+    deactivate_comms()
     app.run(debug=True)

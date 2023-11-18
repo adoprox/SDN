@@ -1,11 +1,12 @@
-1. Update the login page after host login (authentication output) 
-2. Commend the code (login, classfile, mngtopo)
-3. Test more topologies ( make a folder for multiple topologies)
-4. Use the app to disable the hosts (EDER mail) 
+1. Update the login page after host login (authentication output) - DONE 
+2. Commend the code (login, classfile, mngtopo) - 
+3. Test more topologies ( make a folder for multiple topologies) - 
+4. Use the app to disable the hosts (EDER mail) - The mail provided with 3 apps that needs to be used 
+1 of which is present but does not provide any host information when used. The other 2 are not present on the current ONOS version.
 
 
 4. Try deleting flows using deviceID. 
-5. Then integrate with logout feature. 
+5. Then integrate with logout feature - JUST CHANGE THE FLAG 
 
 6. Make a list of features we have accomplished. 
 and how we tested it 
