@@ -10,12 +10,16 @@ class ONOS:
     password = "rocks"
     onos_url = "http://localhost:8181/onos/v1/"
 
+    # Method for making a GET request to ONOS API
     def getmethod(self, key):
         getpath = os.path.join(self.onos_url, key)
+
+        # Make the GET request with authentication
         response = requests.get(getpath, auth=(self.username, self.password))
         json_data = response.json()
-        list = {}
+        list = {}  # Initialize an empty dictionary or list to store the result
         if key == "hosts":
+            # Extract information for each host and store in the result dictionary
             for host in json_data["hosts"]:
                 ip_address = host["ipAddresses"][0]
                 element_id = host["locations"][0]["elementId"]
@@ -30,18 +34,25 @@ class ONOS:
 
         return list
 
+    # Method for making a POST request to ONOS API
     def postmethod(self, deviceID, postdata):
 
+        # Define headers for the POST request
         headers = {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         }
+        # Generate a random application number for appID
         appnum = random.randint(1, 1000)
         # used to manage JSON Files
-        appID = "?appID=00" + str(appnum)
+        appID = "?appID=00" + str(appnum) # Format the appID
+
+        # Construct the complete URL for the POST request
         setting = "flows/"
         flows_id= deviceID + appID
         getpath = os.path.join(self.onos_url, setting, flows_id)
+
+        # Make the POST request with the provided data, headers, and authentication
         response = requests.post(getpath, data=json.dumps(postdata), headers=headers, auth=(self.username, self.password))
         return response
 
