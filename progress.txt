@@ -27,4 +27,4 @@ and how we tested it
 
 7. Update code on GITHUB from laptop. 
 8. Make the code more readable and clean the unused functions. (mngtopo and customclass)
-
+9. remove login_1.html from templates. (check which one gives the user output)
