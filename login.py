@@ -83,3 +83,4 @@ def deactivate_comms():
 if __name__ == '__main__':
     deactivate_comms()  # Deactivate communications on startup
     app.run(debug=True)
+    
