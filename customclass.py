@@ -10,53 +10,74 @@ class ONOS:
     password = "rocks"
     onos_url = "http://localhost:8181/onos/v1/"
 
-    # Method for making a GET request to ONOS API
+    # Fetches data using GET request based on provided key
     def getmethod(self, key):
         getpath = os.path.join(self.onos_url, key)
-
-        # Make the GET request with authentication
         response = requests.get(getpath, auth=(self.username, self.password))
         json_data = response.json()
-        list = {}  # Initialize an empty dictionary or list to store the result
+        result = {}
+
         if key == "hosts":
-            # Extract information for each host and store in the result dictionary
+            # Extracts host information and stores it in a dictionary
             for host in json_data["hosts"]:
                 ip_address = host["ipAddresses"][0]
                 element_id = host["locations"][0]["elementId"]
                 port = host["locations"][0]["port"]
-                list[ip_address] = {
+                result[ip_address] = {
                     "flag": "0",
                     "elementId": element_id,
-                    "port": port, }
+                    "port": port,
+                }
         if key == "devices":
-            # Extract the "id" value for each device
-            list = [device["id"] for device in json_data.get("devices", [])]
+            # Extracts device IDs and stores them in a list
+            result = [device["id"] for device in json_data.get("devices", [])]
 
-        return list
+        return result
 
-    # Method for making a POST request to ONOS API
+    # Sends POST request to add flow rules
     def postmethod(self, deviceID, postdata):
-
-        # Define headers for the POST request
         headers = {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         }
-        # Generate a random application number for appID
         appnum = random.randint(1, 1000)
-        # used to manage JSON Files
-        appID = "?appID=00" + str(appnum) # Format the appID
-
-        # Construct the complete URL for the POST request
+        appID = "?appID=00" + str(appnum)
         setting = "flows/"
-        flows_id= deviceID + appID
+        flows_id = deviceID + appID
         getpath = os.path.join(self.onos_url, setting, flows_id)
-
-        # Make the POST request with the provided data, headers, and authentication
         response = requests.post(getpath, data=json.dumps(postdata), headers=headers, auth=(self.username, self.password))
         return response
 
+    # Deletes specific flows based on device ID and login ID
+    def autodeletmethod(self, key, device_ID, loginID):
+        device_ID = device_ID.replace('of:', 'of%3A')
+        getpath = os.path.join(self.onos_url, key, device_ID)
+        response = requests.get(getpath, auth=(self.username, self.password))
 
-"""In summary, this JSON structure defines a flow entry with a specific priority, timeout, and match criteria. 
-It directs packets with an Ethernet type of "0x88cc" arriving at the device with ID "of:0000000000000001" to be sent out to the controller port ("CONTROLLER").
- This rule remains active indefinitely (isPermanent is true) until explicitly removed."""
+        loginID = loginID + "/32"
+        json_data = response.json()
+
+        # Filters flow IDs based on specific criteria
+        filtered_flow_ids = [
+            entry['id'] for entry in json_data.get("flows", [])
+            if entry.get("appId") == "org.onosproject.rest"
+            and any(
+                criterion.get("type") == "IPV4_SRC" and criterion.get("ip") == loginID
+                for criterion in entry.get("selector", {}).get("criteria", [])
+            )
+            and any(
+                instruction.get("type") == "NOACTION"
+                for instruction in entry.get("treatment", {}).get("instructions", [])
+            )
+        ]
+
+        headers = {
+            'Accept': 'application/json'
+        }
+        
+        # Deletes flows with specified flow IDs
+        for flow_id in filtered_flow_ids:
+            url = os.path.join(getpath, flow_id)
+            response = requests.delete(url, headers=headers, auth=("onos", "rocks"))
+        
+        return response
